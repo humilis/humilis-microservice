@@ -155,6 +155,8 @@ resources:
           IntegrationHttpMethod: POST
           Uri: {"Fn::Join" : ["", ["arn:aws:apigateway:", {"Ref": "AWS::Region"}, ":lambda:path/2015-03-31/functions/", {"Fn::GetAtt": ["Lambda", "Arn"]}, "/invocations"]]}
           PassthroughBehavior: WHEN_NO_TEMPLATES
+        IntegrationResponses:
+            - StatusCode: 200
         MethodResponses:
             - StatusCode: 200
 
