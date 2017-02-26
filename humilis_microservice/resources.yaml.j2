@@ -66,7 +66,7 @@ resources:
       Properties:
         Action: "lambda:invokeFunction"
         FunctionName: {"Fn::GetAtt": ["Lambda", "Arn"]}
-        Principal": "apigateway.amazonaws.com"
+        Principal: "apigateway.amazonaws.com"
         SourceArn:
             "Fn::Join":
                 - ""
@@ -154,7 +154,7 @@ resources:
           Type: AWS
           IntegrationHttpMethod: POST
           Uri: {"Fn::Join" : ["", ["arn:aws:apigateway:", {"Ref": "AWS::Region"}, ":lambda:path/2015-03-31/functions/", {"Fn::GetAtt": ["Lambda", "Arn"]}, "/invocations"]]}
-          PassthroughBehavior: WHEN_NO_TEMPLATE
+          PassthroughBehavior: WHEN_NO_TEMPLATES
 
     RestApiDeployment:
       Type: "AWS::ApiGateway::Deployment"
