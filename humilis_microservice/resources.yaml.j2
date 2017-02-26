@@ -136,7 +136,7 @@ resources:
               - RestApi
               - RootResourceId
             {% endif %}
-        PathPart: "{{resource_path}}"
+        PathPart: "{{resource_path or _layer.name}}"
 
     Method:
       Type: "AWS::ApiGateway::Method"
