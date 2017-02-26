@@ -1,0 +1,45 @@
+---
+meta:
+    description:
+        AWS Lambda microservice
+
+    parameters:
+        dynamodb_capacity:
+            description:
+                The read and write capacity for the Lambda state table(s)
+            value:
+                read: 5
+                write: 5
+
+        rest_api_id:
+            value:
+
+        parent_resource_id:
+            value:
+
+        resource_path:
+            value:
+
+        api_stage:
+            value:
+
+        environment:
+            description:
+                A dictionary with environment variables to pass to Lambda
+            value:
+
+        handler:
+            description:
+                The Python callable that will handle the requests
+            value:
+
+
+        lambda_function:
+            # We use a low priority so that the references above that retrieve
+            # the names of the relevant streams are resolved before this
+            # reference.
+            priority: 100
+            value:
+                $lambda:
+                    path: lambda_function
+                    dependencies: {{lambda_dependencies or []}}

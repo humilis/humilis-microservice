@@ -1,0 +1,13 @@
+---
+humilis-microservice:
+    description:
+        A dummy environment used for testing the microservice plugin.
+
+    layers:
+        - layer: microservice
+          layer_type: microservice
+          lambda_dependencies:
+            - user-agents
+            - mycode/mypkg
+          handler: "mypkg:handler"
+

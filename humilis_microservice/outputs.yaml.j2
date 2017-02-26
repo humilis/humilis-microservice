@@ -1,0 +1,22 @@
+---
+outputs:
+    LambdaArn:
+        Description:
+            The Arn of the backend Lambda function
+        Value:
+          "Fn::GetAtt":
+              - Lambda
+              - Arn
+    {% if not api_id %}
+    RestApiRootResource:
+        Description:
+            The REST API root resource id
+        Value:
+          "Fn::GetAtt":
+              - RestApi
+              - RootResourceId
+    RestApiId:
+        Description:
+            The REST API Id
+        Value: {Ref: RestApi}
+    {% endif %}
