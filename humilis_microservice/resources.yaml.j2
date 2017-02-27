@@ -148,6 +148,7 @@ resources:
           {"Ref": "RestApi"}
           {% endif %}
         ResourceId: {Ref: "Resource"}
+        ApiKeyRequired: {{api_key_required}}
         HttpMethod: POST
         AuthorizationType: NONE
         Integration:
@@ -157,13 +158,22 @@ resources:
           PassthroughBehavior: WHEN_NO_TEMPLATES
           IntegrationResponses:
               - StatusCode: 200
+          RequestTemplates:
+            "application/json": "{\"parameters\": \"$input.params()\"}"
         MethodResponses:
             - StatusCode: 200
+        {% if request_parameters %}
+        RequestParameters:
+          {% for k, v in request_parameters.items() %}
+          "method.request.{{k}}": {{v}}
+          {% endfor %}
+        {% endif %}
 
-    RestApiDeployment:
+    RestApiDeployment{{6|uuid4(cache=True)}}:
       Type: "AWS::ApiGateway::Deployment"
       DependsOn: ["Method"]
       Properties:
+          Description: "{{_env.stage}} deployment of {{_env.name}} environment"
           RestApiId:
             {% if api_id %}
             {{api_id}}
@@ -171,3 +181,17 @@ resources:
             {"Ref": "RestApi"}
             {% endif %}
           StageName: {{api_stage or _env.stage}}
+
+    ApiKey:
+      Type: "AWS::ApiGateway::ApiKey"
+      DependsOn:
+        - "RestApiDeployment{{6|uuid4(cache=True)}}"
+        - "RestApi"
+      Properties:
+        Name: "{{_env.name}}-{{_env.stage}}"
+        Description: "API key for stage {{_env.stage}} of environment {{_env.name}}"
+        Enabled: "true"
+        StageKeys:
+          - RestApiId:
+              Ref: RestApi
+            StageName: "{{_env.stage}}"

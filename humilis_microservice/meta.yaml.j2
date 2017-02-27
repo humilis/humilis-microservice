@@ -20,9 +20,6 @@ meta:
         resource_path:
             value:
 
-        api_stage:
-            value:
-
         environment:
             description:
                 A dictionary with environment variables to pass to Lambda
@@ -32,6 +29,13 @@ meta:
             description:
                 The Python callable that will handle the requests
             value:
+
+        api_key_required:
+            value:
+                yes
+
+        request_parameters:
+            value: {}
 
 
         lambda_function:

@@ -10,4 +10,6 @@ humilis-microservice:
             - user-agents
             - mycode/mypkg
           handler: "mypkg:handler"
-
+          resource_path: echo
+          request_parameters:
+            "querystring.ip": yes
