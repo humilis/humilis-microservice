@@ -10,7 +10,11 @@ resources:
     RestApi:
       Type: "AWS::ApiGateway::RestApi"
       Properties:
-        Name: "{{_env.name}}-{{_layer.name}}"
+        {% if api_name %}
+        Name: "{{api_name}}-{{_env.stage}}"
+        {% else %}
+        Name: "{{_env.name}}-{{_layer.name}}-{{_env.stage}}"
+        {% endif %}
     {% endif %}
 
     {% if globs.stateful %}
@@ -207,7 +211,7 @@ resources:
             {% else %}
             {"Ref": "RestApi"}
             {% endif %}
-          StageName: {{api_stage or _env.stage}}
+          StageName: {{api_stage or _env.stage|lower}}
 
     ApiKey:
       Type: "AWS::ApiGateway::ApiKey"
@@ -221,4 +225,4 @@ resources:
         StageKeys:
           - RestApiId:
               Ref: RestApi
-            StageName: "{{_env.stage}}"
+            StageName: "{{api_stage or _env.stage|lower}}"
