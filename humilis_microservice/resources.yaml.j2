@@ -45,7 +45,7 @@ resources:
         {% if resource.lambda_function.memory_size %}
         MemorySize: "{{resource.lambda_function.memory_size}}"
         {% endif %}
-        Description: "{{_layer.description}}"
+        Description: "{{resource.description or _layer.description}}"
         {# in seconds #}
         {% if resource.lambda_function.timeout %}
         Timeout: "{{resource.lambda_function.timeout}}"

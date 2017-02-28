@@ -13,6 +13,14 @@ humilis-microservice:
                 lambda_dependencies:
                     - user-agents
                     - mycode/mypkg
-                handler: "mypkg:handler"
+                handler: "mypkg:echo"
                 request_parameters:
                   "querystring.ip": yes
+
+              - description: "Returns request payload plus a timestamp"
+                path: parseua
+                api_key_required: yes
+                lambda_dependencies:
+                    - user-agents
+                    - mycode/mypkg
+                handler: "mypkg:parse_ua"
