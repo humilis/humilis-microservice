@@ -6,10 +6,13 @@ humilis-microservice:
     layers:
         - layer: microservice
           layer_type: microservice
-          lambda_dependencies:
-            - user-agents
-            - mycode/mypkg
-          handler: "mypkg:handler"
-          resource_path: echo
-          request_parameters:
-            "querystring.ip": yes
+          resources:
+              - description: "Returns request payload plus a timestamp"
+                path: echo
+                api_key_required: yes
+                lambda_dependencies:
+                    - user-agents
+                    - mycode/mypkg
+                handler: "mypkg:handler"
+                request_parameters:
+                  "querystring.ip": yes

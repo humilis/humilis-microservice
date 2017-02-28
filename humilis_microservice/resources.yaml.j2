@@ -13,33 +13,6 @@ resources:
         Name: "{{_env.name}}-{{_layer.name}}"
     {% endif %}
 
-    Lambda:
-      Type: "AWS::Lambda::Function"
-      Properties:
-        Code:
-          S3Bucket: "{{lambda_function.s3bucket}}"
-          S3Key: "{{lambda_function.s3key}}"
-        Runtime: "python2.7"
-        MemorySize: "{{memory_size}}"
-        Description: "{{_layer.description}}"
-        {# in seconds #}
-        Timeout: "{{timeout}}"
-        Handler: "handler.lambda_handler"
-        Role:
-          "Fn::GetAtt":
-              - LambdaExecutionRole
-              - Arn
-        Environment:
-          Variables:
-              "HUMILIS_ENVIRONMENT": "{{_env.name}}"
-              "HUMILIS_STAGE": "{{_env.stage}}"
-              "HUMILIS_LAYER": "{{_layer.name}}"
-              {% if environment %}
-              {% for varname, varvalue in environment.items() %}
-              "{{varname}}": "{{varvalue}}"
-              {% endfor %}
-              {% endif %}
-
     {% if globs.stateful %}
     StateTable:
       Type: "AWS::DynamoDB::Table"
@@ -61,11 +34,43 @@ resources:
         {% endif %}
     {% endif %}
 
-    LambdaPermission:
+    {% for resource in api_resources %}
+    Lambda{{loop.index}}:
+      Type: "AWS::Lambda::Function"
+      Properties:
+        Code:
+          S3Bucket: "{{resource.lambda_function.s3bucket}}"
+          S3Key: "{{resource.lambda_function.s3key}}"
+        Runtime: "python2.7"
+        {% if resource.lambda_function.memory_size %}
+        MemorySize: "{{resource.lambda_function.memory_size}}"
+        {% endif %}
+        Description: "{{_layer.description}}"
+        {# in seconds #}
+        {% if resource.lambda_function.timeout %}
+        Timeout: "{{resource.lambda_function.timeout}}"
+        {% endif %}
+        Handler: "handler.lambda_handler"
+        Role:
+          "Fn::GetAtt":
+              - LambdaExecutionRole{{loop.index}}
+              - Arn
+        Environment:
+          Variables:
+              "HUMILIS_ENVIRONMENT": "{{_env.name}}"
+              "HUMILIS_STAGE": "{{_env.stage}}"
+              "HUMILIS_LAYER": "{{_layer.name}}"
+              {% if environment %}
+              {% for varname, varvalue in environment.items() %}
+              "{{varname}}": "{{varvalue}}"
+              {% endfor %}
+              {% endif %}
+
+    LambdaPermission{{loop.index}}:
       Type: "AWS::Lambda::Permission"
       Properties:
         Action: "lambda:invokeFunction"
-        FunctionName: {"Fn::GetAtt": ["Lambda", "Arn"]}
+        FunctionName: {"Fn::GetAtt": ["Lambda{{loop.index}}", "Arn"]}
         Principal: "apigateway.amazonaws.com"
         SourceArn:
             "Fn::Join":
@@ -83,7 +88,7 @@ resources:
                   {% endif %}
                   - "/*"
 
-    LambdaExecutionRole:
+    LambdaExecutionRole{{loop.index}}:
       Type: "AWS::IAM::Role"
       Properties:
         AssumeRolePolicyDocument:
@@ -96,7 +101,7 @@ resources:
         # Keep all environment role under the same path
         Path: {{ "/{}/".format(_env.name) }}
         Policies:
-          - PolicyName: root
+          - PolicyName: {{loop.index}}
             PolicyDocument:
               Version: "2012-10-17"
               Statement:
@@ -119,7 +124,7 @@ resources:
                          {"Ref": "AWS::AccountId"}, ":", "table/", {"Ref": "StateTable"}]
                  {% endif %}
 
-    Resource:
+    Resource{{loop.index}}:
       Type: "AWS::ApiGateway::Resource"
       Properties:
         RestApiId:
@@ -130,15 +135,15 @@ resources:
           {% endif %}
         ParentId:
             {% if api_id %}
-            {{parent_resource_id}}
+            {{resource.parent_resource_id}}
             {% else %}
             "Fn::GetAtt":
               - RestApi
               - RootResourceId
             {% endif %}
-        PathPart: "{{resource_path or _layer.name}}"
+        PathPart: "{{resource.path or _layer.name}}"
 
-    Method:
+    Method{{loop.index}}:
       Type: "AWS::ApiGateway::Method"
       Properties:
         RestApiId:
@@ -147,14 +152,14 @@ resources:
           {% else %}
           {"Ref": "RestApi"}
           {% endif %}
-        ResourceId: {Ref: "Resource"}
-        ApiKeyRequired: {{api_key_required}}
+        ResourceId: {Ref: "Resource{{loop.index}}"}
+        ApiKeyRequired: {{resource.api_key_required}}
         HttpMethod: POST
         AuthorizationType: NONE
         Integration:
           Type: AWS
           IntegrationHttpMethod: POST
-          Uri: {"Fn::Join" : ["", ["arn:aws:apigateway:", {"Ref": "AWS::Region"}, ":lambda:path/2015-03-31/functions/", {"Fn::GetAtt": ["Lambda", "Arn"]}, "/invocations"]]}
+          Uri: {"Fn::Join" : ["", ["arn:aws:apigateway:", {"Ref": "AWS::Region"}, ":lambda:path/2015-03-31/functions/", {"Fn::GetAtt": ["Lambda{{loop.index}}", "Arn"]}, "/invocations"]]}
           PassthroughBehavior: WHEN_NO_TEMPLATES
           IntegrationResponses:
               - StatusCode: 200
@@ -162,16 +167,22 @@ resources:
             "application/json": "{\"parameters\": \"$input.params()\"}"
         MethodResponses:
             - StatusCode: 200
-        {% if request_parameters %}
+        {% if resource.request_parameters %}
         RequestParameters:
-          {% for k, v in request_parameters.items() %}
+          {% for k, v in resource.request_parameters.items() %}
           "method.request.{{k}}": {{v}}
           {% endfor %}
         {% endif %}
+    {% endfor %}
 
-    RestApiDeployment{{6|uuid4(cache=True)}}:
+    RestApiDeployment:
       Type: "AWS::ApiGateway::Deployment"
-      DependsOn: ["Method"]
+      {% if api_resources %}
+      DependsOn:
+        {% for _ in api_resources %}
+        - Method{{loop.index}}
+        {% endfor %}
+      {% endif %}
       Properties:
           Description: "{{_env.stage}} deployment of {{_env.name}} environment"
           RestApiId:
@@ -185,7 +196,7 @@ resources:
     ApiKey:
       Type: "AWS::ApiGateway::ApiKey"
       DependsOn:
-        - "RestApiDeployment{{6|uuid4(cache=True)}}"
+        - "RestApiDeployment"
         - "RestApi"
       Properties:
         Name: "{{_env.name}}-{{_env.stage}}"

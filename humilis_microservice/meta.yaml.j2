@@ -17,33 +17,18 @@ meta:
         parent_resource_id:
             value:
 
-        resource_path:
+        api_resources:
             value:
-
-        environment:
-            description:
-                A dictionary with environment variables to pass to Lambda
-            value:
-
-        handler:
-            description:
-                The Python callable that will handle the requests
-            value:
-
-        api_key_required:
-            value:
-                yes
-
-        request_parameters:
-            value: {}
-
-
-        lambda_function:
-            # We use a low priority so that the references above that retrieve
-            # the names of the relevant streams are resolved before this
-            # reference.
-            priority: 100
-            value:
-                $lambda:
-                    path: lambda_function
-                    dependencies: {{lambda_dependencies or []}}
+                {% for resource in resources %}
+                -
+                  lambda_function:
+                    $lambda:
+                        path: lambda_function
+                        dependencies: {{resource.lambda_dependencies}}
+                        handler: {{resource.handler}}
+                  {% for k, v in resource.items() %}
+                  {% if k not in ('lambda_dependencies', 'handler') %}
+                  {{k}}: {{v}}
+                  {% endif %}
+                  {% endfor %}
+                {% endfor %}
