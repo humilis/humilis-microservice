@@ -13,5 +13,5 @@ def echo(event, context):
 
 def uaparse(event, context):
     """Echo handler."""
-    header = json.loads(event["parameters"]).get("header")
-    return {"device": parse(header["User-Agent"])}
+    ua = event["parameters"]["header"]["User-Agent"]
+    return {"device": str(parse(ua))}
