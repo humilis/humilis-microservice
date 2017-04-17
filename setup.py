@@ -24,7 +24,8 @@ setup(
     include_package_data=True,
     package_data={
         "": ["*.j2", "*.yaml"]},
-    packages=find_packages(include=["humilis_microservice"]),
+    packages=find_packages(include=['humilis_microservice',
+                                    'humilis_microservice.*']),
     version=__version__,
     author=__author__,
     author_email="german@findhotel.net",
