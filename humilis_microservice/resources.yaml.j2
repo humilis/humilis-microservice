@@ -46,6 +46,8 @@ resources:
           S3Bucket: "{{resource.lambda_function.s3bucket}}"
           S3Key: "{{resource.lambda_function.s3key}}"
         Runtime: "python2.7"
+        KmsKeyArn:
+            "arn:aws:kms:eu-west-1:531820706523:key/dbc47831-a143-4414-8777-86b99c2a62d6"
         {% if resource.lambda_function.memory_size %}
         MemorySize: "{{resource.lambda_function.memory_size}}"
         {% endif %}
@@ -64,9 +66,13 @@ resources:
               "HUMILIS_ENVIRONMENT": "{{_env.name}}"
               "HUMILIS_STAGE": "{{_env.stage}}"
               "HUMILIS_LAYER": "{{_layer.name}}"
-              {% if environment %}
-              {% for varname, varvalue in environment.items() %}
-              "{{varname}}": "{{varvalue}}"
+              {% set resource_env = dict(lambda_environment or {}) %}
+              {% if resource.lambda_environment %}
+              {% set _ = resource_env.update(resource.lambda_environment) %}
+              {% endif %}
+              {% if resource_env %}
+              {% for k, v in resource_env.items() %}
+              "{{k}}": "{{v}}"
               {% endfor %}
               {% endif %}
 
@@ -145,7 +151,12 @@ resources:
               - RestApi
               - RootResourceId
             {% endif %}
-        PathPart: "{{resource.path or _layer.name}}"
+        {% if resource.path %}
+        PathPart: "{{resource.path}}"
+        {% else %}
+        PathPart: "{{context.layer.name}}{{loop.index}}"
+        {% endif %}
+
 
     Method{{loop.index}}:
       Type: "AWS::ApiGateway::Method"
@@ -157,7 +168,7 @@ resources:
           {"Ref": "RestApi"}
           {% endif %}
         ResourceId: {Ref: "Resource{{loop.index}}"}
-        ApiKeyRequired: {{resource.api_key_required}}
+        ApiKeyRequired: {{resource.api_key_required or 'no'}}
         HttpMethod: POST
         AuthorizationType: NONE
         Integration:

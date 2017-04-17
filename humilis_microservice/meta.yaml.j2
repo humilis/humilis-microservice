@@ -6,29 +6,40 @@ meta:
     parameters:
         dynamodb_capacity:
             description:
-                The read and write capacity for the Lambda state table(s)
+                The read and write capacity for the Lambda state table(s).
             value:
                 read: 5
                 write: 5
 
         rest_api_id:
+            description:
+                The ID of the REST API that will hold this microservice.
             value:
 
         parent_resource_id:
+            description:
+                The resource ID of the parent of all resources in this microservice.
             value:
+
+        lambda_environment:
+            description:
+                The environment variables that will be injected in all the AWS
+                Lambdas that back the API resources.
+            value: {}
 
         api_resources:
             value:
                 {% for resource in resources %}
                 -
+                  {% if resource.path %}
+                  path: {{resource.path}}
+                  {% endif %}
+                  {% if resource.lambda_environment %}
+                  lambda_environment: {{resource.lambda_environment}}
+                  {% endif %}
                   lambda_function:
                     $lambda:
                         path: lambda_function
                         dependencies: {{resource.lambda_dependencies}}
                         handler: {{resource.handler}}
-                  {% for k, v in resource.items() %}
-                  {% if k not in ('lambda_dependencies', 'handler') %}
-                  {{k}}: {{v}}
-                  {% endif %}
-                  {% endfor %}
                 {% endfor %}
