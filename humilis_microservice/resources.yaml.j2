@@ -46,8 +46,6 @@ resources:
           S3Bucket: "{{resource.lambda_function.s3bucket}}"
           S3Key: "{{resource.lambda_function.s3key}}"
         Runtime: "python2.7"
-        KmsKeyArn:
-            "arn:aws:kms:eu-west-1:531820706523:key/dbc47831-a143-4414-8777-86b99c2a62d6"
         {% if resource.lambda_function.memory_size %}
         MemorySize: "{{resource.lambda_function.memory_size}}"
         {% endif %}
