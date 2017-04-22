@@ -182,6 +182,24 @@ resources:
             "application/json": |
                 #set($allParams = $input.params())
                 {
+                  "body" : $input.json('$'),
+                  "context" : {
+                    "api_id" : "$context.apiId",
+                    "http_method" : "$context.httpMethod",
+                    "stage" : "$context.stage",
+                    "request_id" : "$context.requestId",
+                    "resource_path" : "$context.resourcePath",
+                    "resource_id" : "$context.resourceId",
+                    "identity" : {
+                        "source_ip" : "$context.identity.sourceIp",
+                        "user-agent" : "$context.identity.userAgent",
+                        "account_id" : "$context.identity.accountId",
+                        "api_key" : "$context.identity.apiKey",
+                        "caller" : "$context.identity.caller",
+                        "user" : "$context.identity.user",
+                        "user_arn" : "$context.identity.userArn"
+                    }
+                  },
                   "parameters" : {
                     #foreach($type in $allParams.keySet())
                     #set($params = $allParams.get($type))
