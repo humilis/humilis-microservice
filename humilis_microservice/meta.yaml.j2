@@ -21,10 +21,15 @@ meta:
                 The resource ID of the parent of all resources in this microservice.
             value:
 
-        lambda_environment:
+        variables:
             description:
                 The environment variables that will be injected in all the AWS
                 Lambdas that back the API resources.
+            value: {}
+
+        lambda_environment:
+            description:
+                Deprecated. Use 'variables' instead.
             value: {}
 
         api_resources:
@@ -34,8 +39,8 @@ meta:
                   {% if resource.path %}
                   path: {{resource.path}}
                   {% endif %}
-                  {% if resource.lambda_environment %}
-                  lambda_environment: {{resource.lambda_environment}}
+                  {% if resource.variables or resource.lambda_environment %}
+                  lambda_environment: {{resource.variables or resource.lambda_environment}}
                   {% endif %}
                   lambda_function:
                     $lambda:

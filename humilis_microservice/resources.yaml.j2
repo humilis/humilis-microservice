@@ -64,9 +64,9 @@ resources:
               "HUMILIS_ENVIRONMENT": "{{_env.name}}"
               "HUMILIS_STAGE": "{{_env.stage}}"
               "HUMILIS_LAYER": "{{_layer.name}}"
-              {% set resource_env = dict(lambda_environment or {}) %}
-              {% if resource.lambda_environment %}
-              {% set _ = resource_env.update(resource.lambda_environment) %}
+              {% set resource_env = dict(variables or lambda_environment or {}) %}
+              {% if resource.variables or resource.lambda_environment %}
+              {% set _ = resource_env.update(resource.variables or resource.lambda_environment) %}
               {% endif %}
               {% if resource_env %}
               {% for k, v in resource_env.items() %}
