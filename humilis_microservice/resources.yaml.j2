@@ -45,15 +45,10 @@ resources:
         Code:
           S3Bucket: "{{resource.lambda_function.s3bucket}}"
           S3Key: "{{resource.lambda_function.s3key}}"
-        Runtime: "python2.7"
-        {% if resource.lambda_function.memory_size %}
-        MemorySize: "{{resource.lambda_function.memory_size}}"
-        {% endif %}
-        Description: "{{resource.description or _layer.description}}"
-        {# in seconds #}
-        {% if resource.lambda_function.timeout %}
-        Timeout: "{{resource.lambda_function.timeout}}"
-        {% endif %}
+        Runtime: "{{resource.lambda_function.runtime or runtime}}"
+        MemorySize: "{{resource.lambda_function.memory_size or memory_size}}"
+        Description: "{{resource.description or description}}"
+        Timeout: "{{resource.lambda_function.timeout or timeout}}"
         Handler: "handler.lambda_handler"
         Role:
           "Fn::GetAtt":

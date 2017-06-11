@@ -27,6 +27,19 @@ meta:
                 Lambdas that back the API resources.
             value: {}
 
+        memory_size:
+            description:
+                The memory size for the Lambda, in MB.
+            value: 128
+
+        runtime:
+            description: The Python runtime
+            value: python3.6
+
+        timeout:
+            description: The timeout for the Lambda, in seconds.
+            value: 300
+
         lambda_environment:
             description:
                 Deprecated. Use 'variables' instead.
@@ -45,6 +58,16 @@ meta:
                   lambda_function:
                     $lambda:
                         path: lambda_function
-                        dependencies: {{resource.lambda_dependencies}}
+                        dependencies:
+                            {% if lambda_dependencies %}
+                            {% for dep in lambda_dependencies %}
+                            - {{dep}}
+                            {% endfor %}
+                            {% endif %}
+                            {% if resource.lambda_dependencies %}
+                            {% for dep in resource.lambda_dependencies %}
+                            - {{dep}}
+                            {% endfor %}
+                            {% endif %}
                         handler: {{resource.handler}}
                 {% endfor %}
