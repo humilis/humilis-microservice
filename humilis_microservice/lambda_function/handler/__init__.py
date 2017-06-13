@@ -8,8 +8,8 @@ from lambdautils.monitor import sentry_monitor
 
 
 HANDLER = import_string('{{handler}}')
-INPUT_DELIVERY_STREAM = "{{input_delivery_stream}}"
-OUTPUT_DELIVERY_STREAM = "{{output_delivery_stream}}"
+INPUT_DELIVERY_STREAM = "{{input_delivery_stream or ''}}"
+OUTPUT_DELIVERY_STREAM = "{{output_delivery_stream or ''}}"
 
 
 @sentry_monitor()
