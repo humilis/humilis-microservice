@@ -45,7 +45,16 @@ meta:
                 Deprecated. Use 'variables' instead.
             value: {}
 
+        input_delivery_stream:
+            value:
+            description: Firehose delivery stream for service requests
+
+        output_delivery_stream:
+            description: Firehose delivery stream for service responses
+            value:
+
         api_resources:
+            priority: 100
             value:
                 {% for resource in resources %}
                 -
@@ -71,11 +80,3 @@ meta:
                             {% endif %}
                         handler: {{resource.handler}}
                 {% endfor %}
-
-        input_delivery_stream:
-            value:
-            description: Firehose delivery stream for service requests
-
-        output_delivery_stream:
-            description: Firehose delivery stream for service responses
-            value:
