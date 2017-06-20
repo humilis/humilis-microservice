@@ -108,6 +108,12 @@ resources:
             PolicyDocument:
               Version: "2012-10-17"
               Statement:
+                {% for policy in iam_actions %}
+                - Effect: Allow
+                  Action:
+                    - "{{policy.action}}"
+                  Resource: "{{policy.resource}}"
+                {% endfor %}
                 - Effect: Allow
                   # Write access to Cloudwatch logs
                   Action:

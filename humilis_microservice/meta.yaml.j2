@@ -4,6 +4,11 @@ meta:
         AWS Lambda microservice
 
     parameters:
+        iam_actions:
+            description:
+                Additional IAM actions that the Lambdas will be allowed to perform
+            value: []   # A list of dicts like {action: x, resource: y}
+
         dynamodb_capacity:
             description:
                 The read and write capacity for the Lambda state table(s).
