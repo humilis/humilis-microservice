@@ -120,6 +120,20 @@ resources:
             PolicyDocument:
               Version: "2012-10-17"
               Statement:
+                {% if has_dlq or dlq_arn %}
+                - Effect: Allow
+                  Action:
+                    - "sqs:List*"
+                    - "sqs:Send*"
+                  Resource:
+                  {% if dlq_arn %}
+                    - {{dlq_arn}}
+                  {% else %}
+                    - "Fn::GetAtt":
+                        - DeadLetterQueue{{loop.index}}
+                        - Arn
+                  {% endif %}
+                {% endif %}
                 {% for policy in iam_actions %}
                 - Effect: Allow
                   Action:
