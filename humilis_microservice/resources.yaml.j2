@@ -105,6 +105,7 @@ resources:
 
     LambdaExecutionRole{{loop.index}}:
       Type: "AWS::IAM::Role"
+      DependsOn: DeadLetterQueue{{loop.index}}
       Properties:
         AssumeRolePolicyDocument:
           Version: '2012-10-17'
