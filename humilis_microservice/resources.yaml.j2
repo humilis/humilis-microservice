@@ -124,8 +124,7 @@ resources:
                 {% if has_dlq or dlq_arn %}
                 - Effect: Allow
                   Action:
-                    - "sqs:List*"
-                    - "sqs:Send*"
+                    - "sqs:SendMessage"
                   Resource:
                   {% if dlq_arn %}
                     - {{dlq_arn}}
