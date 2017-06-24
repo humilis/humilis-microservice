@@ -1,6 +1,13 @@
 ---
 outputs:
     {% for _ in api_resources %}
+    DeadLetterQueueArn{{loop.index}}:
+        Description: Arn of dead letter queue
+        Value:
+          "Fn::GetAtt":
+              - DeadLetterQueue{{loop.index}}
+              - Arn
+
     LambdaArn{{loop.index}}:
         Description:
             The Arn of the backend Lambda function

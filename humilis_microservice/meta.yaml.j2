@@ -4,6 +4,17 @@ meta:
         AWS Lambda microservice
 
     parameters:
+        has_dlq:
+            description:
+                Does the microservice Lambda have an associated dead letter queue?
+            value:
+                yes
+
+        dlq_arn:
+            description:
+                The ARN of the dead letter queue.
+            value:
+
         iam_actions:
             description:
                 Additional IAM actions that the Lambdas will be allowed to perform

@@ -39,6 +39,9 @@ resources:
     {% endif %}
 
     {% for resource in api_resources %}
+    DeadLetterQueue{{loop.index}}: 
+        Type: "AWS::SQS::Queue"
+
     Lambda{{loop.index}}:
       Type: "AWS::Lambda::Function"
       Properties:
@@ -50,6 +53,15 @@ resources:
         Description: "{{resource.description or description}}"
         Timeout: "{{resource.lambda_function.timeout or timeout}}"
         Handler: "handler.lambda_handler"
+        DeadLetterConfig:
+            TargetArn:
+                {% if dql_arn %}
+                {{dlq_arn}}
+                {% else %}
+                "Fn::GetAtt":
+                    - DeadLetterQueue{{loop.index}}
+                    - Arn
+                {% endif %}
         Role:
           "Fn::GetAtt":
               - LambdaExecutionRole{{loop.index}}
