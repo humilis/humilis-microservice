@@ -15,6 +15,7 @@ resources:
         {% else %}
         Name: "{{_env.name}}-{{_layer.name}}-{{_env.stage}}"
         {% endif %}
+        Description: "{{api_description}}"
     {% endif %}
 
     {% if globs.stateful %}

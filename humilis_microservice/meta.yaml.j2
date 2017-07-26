@@ -4,6 +4,14 @@ meta:
         AWS Lambda microservice
 
     parameters:
+        api_name:
+            description: The name of the API
+            value:
+
+        api_description:
+            description: Description to associate to the Rest API resource
+            value:
+
         has_dlq:
             description:
                 Does the microservice Lambda have an associated dead letter queue?
