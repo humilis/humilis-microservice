@@ -1,12 +1,14 @@
 ---
 outputs:
     {% for _ in api_resources %}
+    {% if has_dead_letter_queue and not dead_letter_queue_arn %}
     DeadLetterQueueArn{{loop.index}}:
         Description: Arn of dead letter queue
         Value:
           "Fn::GetAtt":
               - DeadLetterQueue{{loop.index}}
               - Arn
+    {% endif %}
 
     LambdaArn{{loop.index}}:
         Description:
