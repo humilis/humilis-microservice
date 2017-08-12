@@ -110,7 +110,9 @@ resources:
 
     LambdaExecutionRole{{loop.index}}:
       Type: "AWS::IAM::Role"
+      {% if has_dead_letter_queue or dead_letter_queue_arn %}
       DependsOn: DeadLetterQueue{{loop.index}}
+      {% endif %}
       Properties:
         AssumeRolePolicyDocument:
           Version: '2012-10-17'
