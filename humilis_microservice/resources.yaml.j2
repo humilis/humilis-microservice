@@ -40,8 +40,10 @@ resources:
     {% endif %}
 
     {% for resource in api_resources %}
+    {% if has_dead_letter_queue and not dead_letter_queue_arn %} 
     DeadLetterQueue{{loop.index}}: 
         Type: "AWS::SQS::Queue"
+    {% endif %} 
 
     Lambda{{loop.index}}:
       Type: "AWS::Lambda::Function"
@@ -54,15 +56,17 @@ resources:
         Description: "{{resource.description or description}}"
         Timeout: "{{resource.lambda_function.timeout or timeout}}"
         Handler: "handler.lambda_handler"
+        {% if has_dead_letter_queue or dead_letter_queue_arn %}
         DeadLetterConfig:
             TargetArn:
-                {% if dql_arn %}
-                {{dlq_arn}}
+                {% if dead_letter_queue_arn %}
+                {{dead_letter_queue_arn}}
                 {% else %}
                 "Fn::GetAtt":
                     - DeadLetterQueue{{loop.index}}
                     - Arn
                 {% endif %}
+        {% endif %}
         Role:
           "Fn::GetAtt":
               - LambdaExecutionRole{{loop.index}}
@@ -122,13 +126,13 @@ resources:
             PolicyDocument:
               Version: "2012-10-17"
               Statement:
-                {% if has_dlq or dlq_arn %}
+                {% if has_dead_letter_queue or dead_letter_queue_arn %}
                 - Effect: Allow
                   Action:
                     - "sqs:SendMessage"
                   Resource:
-                  {% if dlq_arn %}
-                    - {{dlq_arn}}
+                  {% if dead_letter_queue_arn %}
+                    - {{dead_letter_queue_arn}}
                   {% else %}
                     - "Fn::GetAtt":
                         - DeadLetterQueue{{loop.index}}
