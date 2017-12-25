@@ -45,9 +45,30 @@ resources:
         Type: "AWS::SQS::Queue"
     {% endif %} 
 
+    {% if schedule_expression or resource.schedule_expression %}
+    ScheduledRule{{loop.index}}:
+      Type: "AWS::Events::Rule"
+      Properties:
+        Description: "ScheduledRule"
+        ScheduleExpression: "{{resource.schedule_expression or schedule_expression}}"
+        State: "ENABLED"
+        Targets:
+            - "Arn": { "Fn::GetAtt": ["Lambda{{loop.index}}", "Arn"] }
+              "Id": "MicroserviceScheduledTrigger"
+
+    PermissionForEventsToInvokeLambda{{loop.index}}:
+      Type: "AWS::Lambda::Permission"
+      Properties:
+        FunctionName: { "Ref": "Lambda{{loop.index}}" }
+        Action: "lambda:InvokeFunction"
+        Principal: "events.amazonaws.com"
+        SourceArn: { "Fn::GetAtt": ["ScheduledRule{{loop.index}}", "Arn"] }
+    {% endif %}
+
     Lambda{{loop.index}}:
       Type: "AWS::Lambda::Function"
       Properties:
+        FunctionName: "{{__context.environment.name}}-{{__context.layer.name}}-{{__context.stage}}-{{loop.index}}"
         Code:
           S3Bucket: "{{resource.lambda_function.s3bucket}}"
           S3Key: "{{resource.lambda_function.s3key}}"
@@ -147,13 +168,20 @@ resources:
                     - "{{policy.action}}"
                   Resource: "{{policy.resource}}"
                 {% endfor %}
-                - Effect: Allow
-                  # Write access to Cloudwatch logs
+                # Access to CW logs
+                - Effect: "Allow"
                   Action:
-                    - "logs:CreateLogGroup"
-                    - "logs:CreateLogStream"
-                    - "logs:PutLogEvents"
-                  Resource: "arn:aws:logs:*:*:*"
+                  - "logs:CreateLogGroup"
+                  - "logs:CreateLogStream"
+                  - "logs:PutLogEvents"
+                  - "logs:PutRetentionPolicy"
+                  - "logs:PutSubscriptionFilter"
+                  - "logs:DescribeLogStreams"
+                  - "logs:DeleteLogGroup"
+                  - "logs:DeleteRetentionPolicy"
+                  - "logs:DeleteSubscriptionFilter"
+                  Resource:
+                    Fn::Sub: "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/{{__context.environment.name}}-{{__context.layer.name}}-{{__context.stage}}-{{loop.index}}:*:*"
                   {% if globs.stateful %}
                 - Effect: Allow
                   # Read/write permission on the associated state tables

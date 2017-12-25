@@ -10,6 +10,7 @@ def echo(event, context):
     """Echo handler."""
     event["ts"] = time.time()
     event["os.environ"] = dict(os.environ)
+    print(json.dumps(event, indent=4))
     return event
 
 

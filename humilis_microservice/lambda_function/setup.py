@@ -11,10 +11,10 @@ setup(
     install_requires=[
         "boto3",
         "raven",
-        "lambdautils>=1.0.8",
+        "lambdautils>=1.6.2",
         "werkzeug",
     ],
     classifiers=[
-        "Programming Language :: Python :: 2.7"],
+        "Programming Language :: Python :: 3.6"],
     zip_safe=False
 )

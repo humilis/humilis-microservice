@@ -12,6 +12,7 @@ humilis-microservice:
               - description: "Returns request payload plus a timestamp"
                 path: echo
                 api_key_required: yes
+                schedule_expression: "rate(1 minute)"
                 lambda_environment:
                     RES1: RES1VAL
                 lambda_dependencies:

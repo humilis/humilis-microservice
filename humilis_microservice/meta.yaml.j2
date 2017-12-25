@@ -4,6 +4,10 @@ meta:
         AWS Lambda microservice
 
     parameters:
+        schedule_expression:
+            description: The schedule expression for the Lambda trigger
+            value:
+
         api_name:
             description: The name of the API
             value:
@@ -84,6 +88,9 @@ meta:
                 -
                   {% if resource.path %}
                   path: {{resource.path}}
+                  {% endif %}
+                  {% if resource.schedule_expression %}
+                  schedule_expression: {{resource.schedule_expression}}
                   {% endif %}
                   {% if resource.variables or resource.lambda_environment %}
                   lambda_environment: {{resource.variables or resource.lambda_environment}}
