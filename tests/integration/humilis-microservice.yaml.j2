@@ -31,3 +31,14 @@ humilis-microservice:
                     - user-agents
                     - mycode/mypkg
                 handler: "mypkg:uaparse"
+
+              - description: "Parses the provided UA string (using application/x-www-form-urlencoded)"
+                path: parseua2
+                content_type: 'application/x-www-form-urlencoded'
+                api_key_required: yes
+                lambda_environment:
+                    RES3: RES3VAL
+                lambda_dependencies:
+                    - user-agents
+                    - mycode/mypkg
+                handler: "mypkg:uaparse"
