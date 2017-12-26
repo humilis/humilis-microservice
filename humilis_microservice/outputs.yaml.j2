@@ -1,6 +1,6 @@
 ---
 outputs:
-    {% for _ in api_resources %}
+    {% for resource in api_resources %}
     {% if has_dead_letter_queue and not dead_letter_queue_arn %}
     DeadLetterQueueArn{{loop.index}}:
         Description: Arn of dead letter queue
@@ -8,6 +8,16 @@ outputs:
           "Fn::GetAtt":
               - DeadLetterQueue{{loop.index}}
               - Arn
+    {% endif %}
+
+    Path:
+        Description: The API resource path
+        Value: {{resource.path}}
+
+    {% if resource.schedule_expression or schedule_expression %}
+    ScheduleExpression:
+        Description: The scheduled trigger for the microservice
+        Value: {{resource.schedule_expression or schedule_expression}}
     {% endif %}
 
     LambdaArn{{loop.index}}:
@@ -31,6 +41,7 @@ outputs:
             The REST API Id
         Value: {Ref: RestApi}
     {% endif %}
+
     RootResourceInvokeUrl:
         Description:
             The invoke URL for the root resource of the API
