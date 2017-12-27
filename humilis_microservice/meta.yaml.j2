@@ -29,8 +29,13 @@ meta:
 
         iam_actions:
             description:
-                Additional IAM actions that the Lambdas will be allowed to perform
+                Additional IAM actions that the Lambdas will be allowed to perform. This is deprecated in favor of iam_role_policies.
             value: []   # A list of dicts like {action: x, resource: y}
+
+        iam_role_policies:
+            description:
+                Additional policies to attach to the Lambda exec role
+            value: []   # A list of policy documents
 
         dynamodb_capacity:
             description:

@@ -6,6 +6,8 @@ humilis-microservice:
     layers:
         - layer: microservice
           layer_type: microservice
+          iam_role_policies:
+            - {% include "policies/kms-decrypt.json" %}
           lambda_environment:
             GLOBAL_VAR: GLOBAL_VAL
           resources:

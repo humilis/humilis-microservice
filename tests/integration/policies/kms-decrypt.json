@@ -1,0 +1,17 @@
+{
+    "PolicyName": "KmsDecrypt",
+    "PolicyDocument":
+        {
+            "Version": "2012-10-17",
+            "Statement": [
+                {
+                    "Action": [
+                        "kms:Decrypt",
+                        "kms:DescribeKey"
+                    ],
+                    "Effect": "Allow",
+                    "Resource": "*"
+                }
+            ]
+        }
+}

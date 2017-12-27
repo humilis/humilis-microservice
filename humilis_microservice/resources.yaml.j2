@@ -145,10 +145,21 @@ resources:
         # Keep all environment role under the same path
         Path: {{ "/{}/".format(_env.name) }}
         Policies:
+          {% if iam_role_policies %}
+          {% for policy in iam_role_policies %}
+          - {{ policy }}
+          {% endfor %}
+          {% endif %}
           - PolicyName: {{loop.index}}
             PolicyDocument:
               Version: "2012-10-17"
               Statement:
+                # Access to KMS
+                - Effect: Allow
+                  Resource: "*"
+                  Action:
+                    - "kms:Decrypt"
+                    - "kms:DescribeKey"
                 {% if has_dead_letter_queue or dead_letter_queue_arn %}
                 - Effect: Allow
                   Action:
