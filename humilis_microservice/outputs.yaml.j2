@@ -27,6 +27,14 @@ outputs:
           "Fn::GetAtt":
               - Lambda{{loop.index}}
               - Arn
+
+    LambdaExecutionRole{{loop.index}}:
+        Description:
+            The execution role of the backend Lambda function
+        Value:
+          "Fn::GetAtt":
+              - LambdaExecutionRole{{loop.index}}
+              - Arn
     {% endfor %}
     {% if not api_id %}
     RestApiRootResource:
