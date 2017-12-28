@@ -164,11 +164,12 @@ resources:
                          "{{__context.environment.name}}-{{__context.layer.name}}-{{__context.stage}}-{{loop.index}}"]
                   Action:
                     - "lambda:*"
-                # Permissions to list tags of all other Lambdas
+                # Permissions to list and add tags to all other Lambdas
                 - Effect: Allow
                   Resource: "*"
                   Action:
                     - "lambda:ListTags"
+                    - "lambda:TagResource"
                 # Access to KMS
                 - Effect: Allow
                   Resource: "*"
