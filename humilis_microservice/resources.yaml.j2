@@ -154,6 +154,16 @@ resources:
             PolicyDocument:
               Version: "2012-10-17"
               Statement:
+                # Access to itself
+                - Effect: Allow
+                  Resource:
+                    - "Fn::Join":
+                      - ""
+                      - ["arn:aws:lambda:", {"Ref": "AWS::Region"},":",
+                         {"Ref": "AWS::AccountId"}, ":", "function/",
+                         "{{__context.environment.name}}-{{__context.layer.name}}-{{__context.stage}}-{{loop.index}}"]
+                  Action:
+                    - "lambda:*"
                 # Access to KMS
                 - Effect: Allow
                   Resource: "*"
