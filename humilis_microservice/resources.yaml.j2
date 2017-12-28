@@ -154,7 +154,7 @@ resources:
             PolicyDocument:
               Version: "2012-10-17"
               Statement:
-                # Access to itself
+                # Full access to itself
                 - Effect: Allow
                   Resource:
                     - "Fn::Join":
@@ -164,6 +164,11 @@ resources:
                          "{{__context.environment.name}}-{{__context.layer.name}}-{{__context.stage}}-{{loop.index}}"]
                   Action:
                     - "lambda:*"
+                # Permissions to list tags of all other Lambdas
+                - Effect: Allow
+                  Resource: "*"
+                  Action:
+                    - "lambda:ListTags"
                 # Access to KMS
                 - Effect: Allow
                   Resource: "*"
