@@ -11,6 +11,7 @@ setup(
     install_requires=[
         "boto3",
         "raven",
+        "contextlib2",
         "lambdautils>=1.6.2",
         "werkzeug",
     ],
