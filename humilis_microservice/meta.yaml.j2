@@ -4,6 +4,22 @@ meta:
         AWS Lambda microservice
 
     parameters:
+        http_method:
+            description: The HTTP method
+            value: POST
+
+        hosted_zone_id:
+            description: The hosted zone ID where the domain name will be recorded
+            value:
+
+        domain_name:
+            description: Domain name to associate to the root resource
+            value:
+
+        certificate_arn:
+            description: ARN of the Cert for the domain name.
+            value:
+
         schedule_expression:
             description: The schedule expression for the Lambda trigger
             value:

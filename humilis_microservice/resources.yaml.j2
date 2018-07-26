@@ -6,6 +6,41 @@
 {% set _ = globs.update({'stateful': False}) %}
 {% endif %}
 resources:
+    {% if domain_name and certificate_arn %}
+    DomainName:
+        Type: "AWS::ApiGateway::DomainName"
+        Properties:
+            CertificateArn: {{certificate_arn}}
+            DomainName: {{domain_name}}
+
+    DomainNameMapping:
+       Type: "AWS::ApiGateway::BasePathMapping"
+       Properties:
+         Stage: "{{__context.stage.lower()}}"
+         RestApiId:
+            Ref: RestApi
+         DomainName:
+            Ref: DomainName
+
+    ApiDnsRecord:
+      Type: AWS::Route53::RecordSetGroup
+      Properties:
+        {% if hosted_zone_id %}
+        HostedZoneId: {{hosted_zone_id}}
+        {% else %}
+        HostedZoneName: {{'.'.join(domain_name.split('.')[-2:])}}.
+        {% endif %}
+        RecordSets:
+            - Name: "{{domain_name}}"
+              Type: A
+              AliasTarget:
+                HostedZoneId: Z2FDTNDATAQYW2
+                DNSName:
+                    "Fn::GetAtt":
+                        - DomainName
+                        - DistributionDomainName
+    {% endif %}
+
     {% if not api_id %}
     RestApi:
       Type: "AWS::ApiGateway::RestApi"
@@ -288,7 +323,7 @@ resources:
           {% endif %}
         ResourceId: {Ref: "Resource{{loop.index}}"}
         ApiKeyRequired: {{resource.api_key_required or 'no'}}
-        HttpMethod: POST
+        HttpMethod: {{http_method}}
         AuthorizationType: NONE
         Integration:
           Type: AWS
