@@ -196,7 +196,7 @@ resources:
                       - ""
                       - ["arn:aws:lambda:", {"Ref": "AWS::Region"},":",
                          {"Ref": "AWS::AccountId"}, ":", "function/",
-                         "{{__context.environment.name}}-{{__context.layer.name}}-{{__context.stage}}-{{loop.index}}"]
+                         "{{__context.environment.name}}-{{__context.layer.name}}-{{__context.stage}}-{{loop.index}}:*"]
                   Action:
                     - "lambda:*"
                 # Permissions to list and add tags to all other Lambdas
