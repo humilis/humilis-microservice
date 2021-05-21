@@ -9,11 +9,11 @@ setup(
     include_package_data=True,
     # We often need the latest version of boto3 so we include it as a req
     install_requires=[
-        "boto3",
-        "raven",
-        "contextlib2",
-        "lambdautils>=1.6.2",
-        "werkzeug",
+        "boto3==1.17.15",
+        "raven==6.10.0",
+        "contextlib2==0.6.0",
+        "lambdautils==1.6.2",
+        "werkzeug==1.0.1",
     ],
     classifiers=[
         "Programming Language :: Python :: 3.6"],
