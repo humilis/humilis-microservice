@@ -11,7 +11,7 @@ description = "Humilis plug-in to deploy a Lambda microservice"
 
 try:
     import pypandoc
-    long_description = pypandoc.convert('README.md', 'rst')
+    long_description = pypandoc.convert_file('README.md', 'rst')
 except(IOError, ImportError, RuntimeError):
     if os.path.isfile("README.md"):
         long_description = codecs.open(os.path.join(dirname, "README.md"),
@@ -34,7 +34,7 @@ setup(
     description=description,
     long_description=long_description,
     install_requires=[
-        "humilis>=1.0.6"],
+        "humilis>=1.7.1"],
     classifiers=[
         "Programming Language :: Python :: 3"],
     zip_safe=False,

@@ -2,6 +2,7 @@ HUMILIS := .env/bin/humilis
 PIP := .env/bin/pip
 PYTHON := .env/bin/python
 TOX := .env/bin/tox
+TWINE:= .env/bin/twine
 STAGE := DEV
 HUMILIS_ENV_PATH := tests/integration/
 HUMILIS_ENV := humilis-microservice
@@ -47,4 +48,6 @@ delete: develop
 
 # upload to Pypi
 pypi: develop
-	$(PYTHON) setup.py sdist upload
+	rm -rf dist
+	$(PYTHON) setup.py sdist
+	$(TWINE) upload dist/*
